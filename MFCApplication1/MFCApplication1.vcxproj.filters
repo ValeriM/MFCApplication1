@@ -51,6 +51,7 @@
     <None Include="res\MFCApplication1.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="res\filecopy.avi" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\MFCApplication1.ico">

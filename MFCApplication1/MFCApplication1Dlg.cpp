@@ -107,7 +107,35 @@ void CForm2Dlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CForm2Dlg, CDialogEx)
 END_MESSAGE_MAP()
 
+class CForm3Dlg : public CDialogEx
+{
+public:
+	CForm3Dlg();
 
+	// Dialog Data
+#ifdef AFX_DESIGN_TIME
+	enum { IDD = IDD_Form3 };
+#endif
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+
+// Implementation
+protected:
+	DECLARE_MESSAGE_MAP()
+};
+
+CForm3Dlg::CForm3Dlg() : CDialogEx(IDD_FORM3)
+{
+}
+
+void CForm3Dlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+}
+
+BEGIN_MESSAGE_MAP(CForm3Dlg, CDialogEx)
+END_MESSAGE_MAP()
 // CMFCApplication1Dlg dialog
 
 
@@ -123,6 +151,7 @@ void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_USER, m_User);
 	DDX_Control(pDX, IDC_PASS, m_Pass);
+	DDX_Control(pDX, IDC_ANIMATE1, m_avi);
 }
 
 BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialogEx)
@@ -165,6 +194,8 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+
+	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -231,17 +262,38 @@ void CMFCApplication1Dlg::OnBnClickedOk()
 	CString pass;
 	m_Pass.GetWindowText(pass);
 
-	if (MySimplePostTest(user, pass) == 4294967295)
-	{
+	m_avi.ShowWindow(SW_SHOW);
+	m_avi.Open(IDR_AVI1);
+	m_avi.Play(0, -1, -1);
 
+	int test = MySimplePostTest(user, pass);
+
+	m_avi.Stop();
+	m_avi.Close();
+	m_avi.ShowWindow(SW_HIDE);
+
+	switch (test)
+	{
+	case 0:
+	{
+		CForm3Dlg dlgForm3;
+		dlgForm3.DoModal();
+	}
+		break;
+	case 1:
+	{
 		CForm2Dlg dlgForm2;
 		dlgForm2.DoModal();
 	}
-	else
+		break;
+	case 2: 
 	{
-
 		CForm1Dlg dlgForm1;
 		dlgForm1.DoModal();
+	}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -251,6 +303,7 @@ unsigned long MySimplePostTest(CString user, CString password)
 
 	// Set post data.
 	//"user_id=OfficeEngineer1&password=test123";
+	int retcode = 2;
 
 	CString s1("user_id=");
 	CString s2("&password=");
@@ -277,5 +330,16 @@ unsigned long MySimplePostTest(CString user, CString password)
 	wstring httpResponseHeader = client.GetResponseHeader();
 	wstring httpResponseContent = client.GetResponseContent();
 
-	return httpResponseContent.find(L"f_type\":\"OFFICE");
+
+	if (httpResponseContent.find(L"\"status\":true") == 4294967295)
+	{
+		retcode = 0;
+	}
+	else
+	{
+		if (httpResponseContent.find(L"f_type\":\"OFFICE") == 4294967295)
+			retcode = 1;
+	}
+	
+	return retcode;
 }

@@ -35,4 +35,5 @@ public:
 	CEdit m_User;
 	CEdit m_Pass;
 	afx_msg void OnBnClickedOk();
+	CAnimateCtrl m_avi;
 };
